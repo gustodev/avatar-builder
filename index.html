@@ -1,96 +1,58 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Avatar Builder</title>
+    <title>Crypto Price App</title>
     <style>
-      .avatar {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        background-color: #ccc;
-        display: inline-block;
+      #prices {
+        display: flex;
+        flex-wrap: wrap;
       }
-      .feature {
-        margin: 5px;
-        display: inline-block;
+      .price {
+        width: 200px;
+        height: 100px;
+        border: 1px solid #ccc;
+        margin: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .name {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .value {
+        font-size: 24px;
+        font-weight: bold;
       }
     </style>
   </head>
   <body>
-    <div>
-      <div class="avatar" id="avatar"></div>
-      <button onclick="generateAvatar()">Generate</button>
-    </div>
-    <div>
-      <h2>Features:</h2>
-      <div class="feature">
-        <label for="hair">Hair:</label>
-        <select id="hair">
-          <option value="short">Short</option>
-          <option value="medium">Medium</option>
-          <option value="long">Long</option>
-        </select>
-      </div>
-      <div class="feature">
-        <label for="eyes">Eyes:</label>
-        <select id="eyes">
-          <option value="blue">Blue</option>
-          <option value="brown">Brown</option>
-          <option value="green">Green</option>
-        </select>
-      </div>
-      <div class="feature">
-        <label for="nose">Nose:</label>
-        <select id="nose">
-          <option value="big">Big</option>
-          <option value="small">Small</option>
-        </select>
-      </div>
-      <div class="feature">
-        <label for="mouth">Mouth:</label>
-        <select id="mouth">
-          <option value="smile">Smile</option>
-          <option value="frown">Frown</option>
-        </select>
-      </div>
-    </div>
+    <h1>Crypto Prices</h1>
+    <div id="prices"></div>
     <script>
-      const hairStyles = {
-        short: 'url("https://i.imgur.com/xZ4h4v5.png")',
-        medium: 'url("https://i.imgur.com/GG9o3qF.png")',
-        long: 'url("https://i.imgur.com/8M6zQ2n.png")',
-      };
+      const API_URL =
+        'https://api.coinmarketcap.com/v1/ticker/?limit=10'; // Change limit to get more or less currencies
 
-      const eyeColors = {
-        blue: '#2B547E',
-        brown: '#8B4513',
-        green: '#3CB371',
-      };
-
-      const noseSizes = {
-        big: '25px',
-        small: '15px',
-      };
-
-      const mouthShapes = {
-        smile: 'M 30 80 Q 50 50 70 80',
-        frown: 'M 30 70 Q 50 90 70 70',
-      };
-
-      function generateAvatar() {
-        const hairStyle = document.getElementById('hair').value;
-        const eyeColor = document.getElementById('eyes').value;
-        const noseSize = noseSizes[document.getElementById('nose').value];
-        const mouthShape = mouthShapes[document.getElementById('mouth').value];
-
-        const avatar = document.getElementById('avatar');
-        avatar.style.backgroundImage = hairStyles[hairStyle];
-        avatar.style.backgroundColor = eyeColors[eyeColor];
-        avatar.innerHTML = `<svg viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="${noseSize}" fill="black" />
-          <path d="${mouthShape}" stroke="black" fill="none" />
-        </svg>`;
-      }
+      fetch(API_URL)
+        .then((response) => response.json())
+        .then((data) => {
+          const pricesDiv = document.getElementById('prices');
+          data.forEach((currency) => {
+            const priceDiv = document.createElement('div');
+            priceDiv.className = 'price';
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'name';
+            nameSpan.innerText = currency.name;
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'value';
+            valueSpan.innerText = `$${currency.price_usd}`;
+            priceDiv.appendChild(nameSpan);
+            priceDiv.appendChild(valueSpan);
+            pricesDiv.appendChild(priceDiv);
+          });
+        })
+        .catch((error) => console.error(error));
     </script>
   </body>
 </html>
